@@ -1,6 +1,7 @@
 com\mycompany\todolistby17thedev\Global.class
 com\mycompany\todolistby17thedev\TaskTable.class
 com\mycompany\todolistby17thedev\Controller.class
+com\mycompany\todolistby17thedev\TodoListby17thedev$2.class
 com\mycompany\todolistby17thedev\LocalDateAdapter.class
 com\mycompany\todolistby17thedev\TodoListby17thedev.class
 com\mycompany\todolistby17thedev\Task.class

@@ -6,12 +6,14 @@ import com.google.gson.reflect.TypeToken;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.ModuleLayer.Controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,7 @@ public class TodoListby17thedev extends JFrame {
     private TaskTable taskTabel = new TaskTable();
     private List<Task> taskList = new ArrayList<>();
     private Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
-    private static String FILE_PATH = "C:\\Users\\84387\\Documents\\webcuatra\\TodoListby17thedev\\src\\main\\java\\tasks.txt";
+    private File tasksDB;
     private int totalPoints = 0;
 
     public TodoListby17thedev() {
@@ -81,6 +83,20 @@ public class TodoListby17thedev extends JFrame {
             }
         }
     }
+
+    private void ensureTaskFileExists() {
+    String userHome = System.getProperty("user.home"); // Thư mục người dùng
+    String taskFilePath = userHome + "\\Documents\\task.txt"; // Đặt file trong thư mục Documents
+    tasksDB = new File(taskFilePath);
+    if (!tasksDB.exists()) {
+        try (Writer writer = new FileWriter(tasksDB)) {
+            writer.write(""); // Tạo file trống
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
     
     public void setPoint(int point)
     {
@@ -105,7 +121,7 @@ public class TodoListby17thedev extends JFrame {
             return;
         }
 
-        if (!Controller.isValidDate(startTimeStr) || !Controller.isValidDate(deadlineStr)) {
+        if (!com.mycompany.todolistby17thedev.Controller.isValidDate(startTimeStr) || !com.mycompany.todolistby17thedev.Controller.isValidDate(deadlineStr)) {
             JOptionPane.showMessageDialog(this, "Ngày bắt đầu hoặc hạn chót không hợp lệ. Định dạng: YYYY-MM-DD");
             return;
         }
@@ -134,7 +150,7 @@ public class TodoListby17thedev extends JFrame {
     }
     
     private void loadTasks() {
-        try (Reader reader = new FileReader(FILE_PATH)) {
+        try (Reader reader = new FileReader(tasksDB)) {
             taskList = gson.fromJson(reader, new TypeToken<ArrayList<Task>>() {}.getType());
             if (taskList == null) {
                 taskList = new ArrayList<>();
@@ -149,7 +165,7 @@ public class TodoListby17thedev extends JFrame {
     }
 
     private void saveTasks() {
-        try (Writer writer = new FileWriter(FILE_PATH)) {
+        try (Writer writer = new FileWriter(tasksDB)) {
             gson.toJson(taskList, writer);
         } catch (IOException e) {
             e.printStackTrace();
@@ -281,6 +297,7 @@ public class TodoListby17thedev extends JFrame {
     
     public void OnApplicationOpen()
     {
+        ensureTaskFileExists();
         loadTasks();
         for (Task task : taskList) {
             if(task.isCompleted())
